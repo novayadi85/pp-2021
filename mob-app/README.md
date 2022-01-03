@@ -5,16 +5,8 @@
 ```PowerShell
 git clone https://github.com/novayadi85/pp-2021.git 
 
-```
-
-#Backend folder
 ```shell 
-cd backend && npm install
-```
-
-#Frontend / web-app
-```shell 
-cd web-app && yarn install
+cd mob-app && yarn install
 ``` 
 atau
 
@@ -32,3 +24,6 @@ OR
 ```shell 
 npm start 
 ```
+
+1. Scan Barcode with your expo app in your phone 
+2. Good Luck
