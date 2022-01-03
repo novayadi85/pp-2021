@@ -1,68 +1,29 @@
 import * as React from 'react';
-import { Button, Text, View, StyleSheet } from 'react-native';
-import { NavigationContainer, DefaultTheme, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import ListUser from './components/ListUser';
-import DetailUser from './components/DetailUser';
-import Global from "./styles/Global";
+//https://github.com/oblador/react-native-vector-icons/blob/master/glyphmaps/MaterialCommunityIcons.json
+import { Provider } from 'react-native-paper';
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 0,
-    },
-  });
+/** disabled error */
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Setting a timer']);
 
-function DetailsScreen({ navigation, route }) {
-  const [value, onChangeText] = React.useState(route.params.name);
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      title: value === '' ? 'No title' : value,
-    });
-  }, [navigation, value]);
-  return (
-    <View style={Global.flexBox}>
-      <DetailUser user={route.params} navigate={navigation}/>
-    </View>
-  );
-}
-
-function HomeScreen({ navigation }) {
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      title: "Beranda"
-    });
-  }, [navigation]);
-
-  return (
-    <View style={Global.flexBox}>
-      <ListUser navigate={navigation}/>
-    </View>
-  );
-}
-
-function NewsScreen({ navigation }) {
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      title: "Berita"
-    });
-  }, [navigation]);
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>News screen</Text>
-    </View>
-  );
-}
+//screens
+import HomeScreen from './screens/Home';
+import DetailsScreen from './screens/Detail';
+import NewsScreen from './screens/News';
+import CreateScreen from './screens/Create';
 
 const HomeStack = createNativeStackNavigator();
 
-function HomeStackScreen(navigation) {
+function HomeStackScreen() {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="Details" component={DetailsScreen} />
+      <HomeStack.Screen name="Create" component={CreateScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -90,22 +51,24 @@ const MyTheme = {
 
 export default function App() {
   return (
-    <NavigationContainer theme={MyTheme}>
-      <Tab.Navigator screenOptions={{ headerShown: false}} initialRouteName="Home"
-        barStyle={{ padding: 0 }}>
-        <Tab.Screen name="beranda" component={HomeStackScreen} options={{
-          tabBarLabel: 'Beranda',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account" color={color} size={22} />
-          ),
-        }} />
-        <Tab.Screen name="berita" component={NewsStackScreen} options={{
-          tabBarLabel: 'Berita',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="album" color={color} size={22} />
-          ),
-        }} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Provider>
+      <NavigationContainer theme={MyTheme}>
+        <Tab.Navigator screenOptions={{ headerShown: false}} initialRouteName="Home"
+          barStyle={{ padding: 0 }}>
+          <Tab.Screen name="beranda" component={HomeStackScreen} options={{
+            tabBarLabel: 'Beranda',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="account" color={color} size={22} />
+            ),
+          }} />
+          <Tab.Screen name="berita" component={NewsStackScreen} options={{
+            tabBarLabel: 'Berita',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="album" color={color} size={22} />
+            ),
+          }} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }

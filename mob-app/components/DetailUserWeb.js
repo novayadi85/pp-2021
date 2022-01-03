@@ -4,29 +4,18 @@ import { Platform, View, StyleSheet, ScrollView , SafeAreaView , ActivityIndicat
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import RenderHtml from 'react-native-render-html';
-import MapView, {Marker, Geojson} from 'react-native-maps';
 import Separator from './Separator';
 import mainColor from './Constants';
 
-if (Platform.OS === 'ios') {
-  // do something for ios
-} else if (Platform.OS === 'android') {
-  // other thing for android
-} else if (Platform.OS === 'web') {
-  // it's on web!
-} else {
-  // you probably won't end up here unless you support another platform!
-}
-
-const Email = ({ containerStyle, onPressEmail, name, email, index }) => (
-    <TouchableOpacity onPress={() => onPressEmail(email)}>
+const Email = ({ containerStyle, action, name, email, index }) => (
+    <TouchableOpacity onPress={() => action(email)}>
       <View style={containerStyle}>
         <View style={styles.iconRow}>
             <MaterialCommunityIcons
                 name="email"
                 color={'gray'} 
                 size={40}
-                onPress={() => onPressEmail()}
+                onPress={() => action(email)}
             />
         </View>
         <View style={styles.emailRow}>
@@ -66,15 +55,15 @@ const Address = ({ containerStyle, name, address , city, country }) => (
     </View>
 );
 
-const Phone = ({ containerStyle, onPressPhone, name, phone, index }) => (
-    <TouchableOpacity onPress={() => onPressTel(phone)}>
+const Phone = ({ containerStyle, action, name, phone, index }) => (
+    <TouchableOpacity onPress={() => action(phone)}>
       <View style={containerStyle}>
         <View style={styles.iconRow}>
             <MaterialCommunityIcons
                 name="phone"
                 color={'gray'} 
                 size={40}
-                onPress={() => onPressTel()}
+                onPress={() => action(phone)}
             />
         </View>
         <View style={styles.telRow}>
@@ -92,28 +81,28 @@ const Phone = ({ containerStyle, onPressPhone, name, phone, index }) => (
             name="textsms"
             underlayColor="transparent"
             iconStyle={styles.smsIcon}
-            onPress={() => onPressSms()}
+            onPress={() => onPressSms(phone)}
           />
         </View>
       </View>
     </TouchableOpacity>
 );
 
-const onPressEmail = email => {
-    Linking.openURL(`mailto://${email}?subject=subject&body=body`).catch(err =>
-      console.log('Error:', err)
-    )
-}
 
+const onPressEmail = email => {
+  Linking.openURL(`mailto://${email}?subject=subject&body=body`).catch(err =>
+    console.log('Error:', err)
+  )
+}
 
 const onPressTel = number => {
-    Linking.openURL(`tel://${number}`).catch(err => console.log('Error:', err))
+  Linking.openURL(`tel://${number}`).catch(err => console.log('Error:', err))
 }
 
-const onPressSms = () => {
-    console.log('sms')
+const onPressSms = (number) => {
+  const separator = Platform.OS === 'ios' ? "&" : "?";
+  Linking.openURL(`sms://${number}${separator}body=Hai Bro..`).catch(err => console.log('Error:', err))
 }
-
 
 const DetailUser = (props) => {
   const { navigate, user } = props;
@@ -128,10 +117,10 @@ const DetailUser = (props) => {
     <View style={styles.container}>
       <View style={styles.Detail}>
         <ScrollView>
-            {
+        {
               (user.avatar_url) ? (
                 <Image
-                source={{uri: user.avatar_url}}
+                  source={{uri: user.avatar_url}}
                   style={styles.image}
                   PlaceholderContent={<ActivityIndicator />}
               />
@@ -143,11 +132,10 @@ const DetailUser = (props) => {
                 />
               )
             }
-            
             <View style={[styles.wrapper]}>
                 <Text style={styles.title}>{user.name}</Text>
                 <View style={styles.content}>
-                    <RenderHtml contentWidth={width} source={{html: user.biodata}} />
+                    <RenderHtml contentWidth={width} source={{html: user.body}} />
                 </View>
                 <Separator/>
                 <Email
@@ -161,7 +149,7 @@ const DetailUser = (props) => {
                     index={1}
                     name={user.name}
                     email={user.email}
-                    onPressEmail={onPressEmail(user.email)}
+                    action={onPressEmail}
                 />
                 <Phone
                     containerStyle={{
@@ -174,7 +162,7 @@ const DetailUser = (props) => {
                     index={1}
                     name={'Work'}
                     phone={user.phone}
-                    onPressEmail={onPressEmail(user.email)}
+                    action={onPressTel}
                 />
 
                 <Address containerStyle={{
@@ -191,23 +179,6 @@ const DetailUser = (props) => {
                     country={user.country}
                 />
             </View>
-            <View style={styles.maps}>
-                <MapView
-                    style={styles.map}
-                    initialRegion={{
-                    latitude: Number(user.latitude),
-                    longitude: Number(user.longitude),
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                    }}
-                    showsUserLocation={true}
-                    showsMyLocationButton={true}
-                    showsBuildings={true}
-                    zoomEnabled={true}
-                    scrollEnabled={true}
-                    moveOnMarkerPress={true}
-                    zoomControlEnabled={true}/>
-                </View>
         </ScrollView>
       </View>
     </View>
